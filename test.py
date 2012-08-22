@@ -6,6 +6,5 @@ from pd import pd, xml
 with xml.Tag( 'foo' ) as oXml :
   with xml.Tag( 'bar' ) :
     pass
-
-oXml.build()
+  pd.o.build()
 
