@@ -6,7 +6,6 @@
 # See LICENSE for details.
 
 import threading
-import xml
 
 class Item( object ) :
 
@@ -23,7 +22,7 @@ class Item( object ) :
     return self
 
   def __exit__( self, * vargs ) :
-    pu.o = self.__dict__[ '__o' ]
+    pd.o = self.__dict__[ '__o' ]
     if self.parent is not None and hasattr( self.parent, 'add' ) :
       self.parent.add( self )
 
