@@ -8,7 +8,10 @@
 from pd_impl import pd
 
 class Tag( pd.Item ) :
-  
-  def add( self, child ) :
-    pass
+
+  def build( self, offset = 0 ) :
+    print( " " * offset + "<{0}>".format( self.name ) )
+    for oChild in self.children :
+      oChild.build( offset + 2 )
+    print( " " * offset + "</{0}>".format( self.name ) )
 

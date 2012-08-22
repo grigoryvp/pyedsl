@@ -9,10 +9,12 @@ import threading
 
 class Item( object ) :
 
-  def __init__( self, parent = None, name = None ) :
+  def __init__( self, name = None, parent = None ) :
+    assert parent is None or isinstance( parent, Item )
     self.__parent = parent if parent is not None else pd.o
     sDefaultName = self.__class__.__name__.lower()
     self.__name = name if name is not None else sDefaultName
+    self.__children = []
 
   def __enter__( self ) :
     ##  Save current value of |pd.o| so |__exit__()| can restore it. This
@@ -23,8 +25,12 @@ class Item( object ) :
 
   def __exit__( self, * vargs ) :
     pd.o = self.__dict__[ '__o' ]
-    if self.parent is not None and hasattr( self.parent, 'add' ) :
-      self.parent.add( self )
+    if self.parent is not None :
+      ##  User defined adder.
+      if hasattr( self.parent, 'add' ) :
+        self.parent.add( self )
+      ##  Build-in adder that maintain tree for lookup.
+      self.parent.__add( self )
 
   @property
   def parent( self ) :
@@ -33,6 +39,13 @@ class Item( object ) :
   @property
   def name( self ) :
     return self.__name
+
+  @property
+  def children( self ) :
+    return self.__children
+
+  def __add( self, child ) :
+    self.__children.append( child )
 
 
 class Pd( object ) :
