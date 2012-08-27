@@ -2,6 +2,7 @@
 # coding:utf-8 vi:et:ts=2
 
 from distutils.core import setup
+import setuptools
 
 setup(
   name='pd',
