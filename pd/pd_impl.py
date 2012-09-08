@@ -22,13 +22,14 @@ class Item( object ) :
     ##    construct child DSL hierarchy in constructor.
     parent = 'auto'
   ) :
-    if isinstance( parent, str ) and 'auto' == parent :
+    if isinstance( parent, basestring ) and 'auto' == parent :
       assert pd.o is not None, "Auto parent top level item."
       self.__parent = pd.o
     else :
       assert parent is None or isinstance( parent, Item ), "Wrong parent."
       self.__parent = parent
     if name is not None :
+      assert isinstance( name, basestring )
       self.__name = name
     else :
       self.__name = self.__class__.__name__.lower()
