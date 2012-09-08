@@ -9,11 +9,29 @@ import threading
 
 class Item( object ) :
 
-  def __init__( self, name = None, parent = None ) :
-    assert parent is None or isinstance( parent, Item )
-    self.__parent = parent if parent is not None else pd.o
-    sDefaultName = self.__class__.__name__.lower()
-    self.__name = name if name is not None else sDefaultName
+  def __init__( self,
+    ##i DSL item name. Used to lookup child item from parent item.
+    name = None,
+    ##i DSL item parent:
+    ##  . |None| to define top level DSL item.
+    ##  . 'auto' to implicitly use `current` parent stored in
+    ##    thread-local |pd.o|. This allows to write nested |with|
+    ##    statements without explicitly defining parents for each item.
+    ##  . |pd.Item| subclass to continue DSL construction from existing
+    ##    parent. Allows to define top level item as standalone class and
+    ##    construct child DSL hierarchy in constructor.
+    parent = 'auto'
+  ) :
+    if isinstance( parent, str ) and 'auto' == parent :
+      assert pd.o is not None, "Auto parent top level item."
+      self.__parent = pd.o
+    else :
+      assert parent is None or isinstance( parent, Item ), "Wrong parent."
+      self.__parent = parent
+    if name is not None :
+      self.__name = name
+    else :
+      self.__name = self.__class__.__name__.lower()
     self.__children = []
 
   def __enter__( self ) :
