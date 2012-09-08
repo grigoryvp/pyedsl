@@ -59,10 +59,6 @@ class Item( object ) :
   def name( self ) :
     return self.__name
 
-  @property
-  def children( self ) :
-    return self.__children
-
   ##x Search children for item with {i name} and evalute to it or |None|.
   def o( self, name ) :
     for oChild in self.__children :
