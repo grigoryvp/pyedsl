@@ -62,6 +62,17 @@ class Item( object ) :
   def children( self ) :
     return self.__children
 
+  ##x Search children for item with {i name} and evalute to it or |None|.
+  def o( self, name ) :
+    for oChild in self.__children :
+      if oChild.name == name :
+        return oChild
+    for oChild in self.__children :
+      oItem = oChild.o( name )
+      if oItem is not None :
+        return oItem
+    return None
+
   def __add( self, child ) :
     self.__children.append( child )
 
