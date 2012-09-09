@@ -44,25 +44,29 @@ class Item( object ) :
 
   def __exit__( self, * vargs ) :
     pd.o = self.__dict__[ '__o' ]
-    if self.parent is not None :
+    if self.__parent is not None :
       ##  User defined adder.
-      if hasattr( self.parent, 'add' ) :
-        self.parent.add( self )
+      if hasattr( self.__parent, 'add' ) :
+        self.__parent.dadd( self )
       ##  Build-in adder that maintain tree for lookup.
-      self.parent.__add( self )
+      self.__parent.__dadd( self )
 
   @property
-  def parent( self ) :
+  ##x Shortage from "Dsl Parent". Not named "parent" since it will conflict
+  ##  with |Tkinter| "parent" method.
+  def dparent( self ) :
     return self.__parent
 
+  ##x Shortage from "Dsl Name". Not named "name" since it will conflict
+  ##  with something for sure.
   @property
-  def name( self ) :
+  def dname( self ) :
     return self.__name
 
   ##x Search children for item with {i name} and evalute to it or |None|.
   def o( self, name ) :
     for oChild in self.__children :
-      if oChild.name == name :
+      if oChild.dname == name :
         return oChild
     for oChild in self.__children :
       oItem = oChild.o( name )
@@ -70,7 +74,8 @@ class Item( object ) :
         return oItem
     return None
 
-  def __add( self, child ) :
+  ##x "DSL Add", name to prevent conflicts.
+  def __dadd( self, child ) :
     self.__children.append( child )
 
 
