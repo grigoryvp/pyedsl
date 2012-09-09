@@ -46,7 +46,7 @@ class Item( object ) :
     pd.o = self.__dict__[ '__o' ]
     if self.__parent is not None :
       ##  User defined adder.
-      if hasattr( self.__parent, 'add' ) :
+      if hasattr( self.__parent, 'dadd' ) :
         self.__parent.dadd( self )
       ##  Build-in adder that maintain tree for lookup.
       self.__parent.__dadd( self )
