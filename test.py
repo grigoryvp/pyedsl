@@ -8,5 +8,5 @@ with xml.Tag( 'foo', parent = None ) as oXml :
     pass
   pd.o.build()
 
-assert oXml.o( 'bar' ).parent.name == 'foo'
+assert oXml.o( 'bar' ).dparent.dname == 'foo'
 

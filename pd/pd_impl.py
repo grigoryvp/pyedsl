@@ -63,6 +63,14 @@ class Item( object ) :
   def dname( self ) :
     return self.__name
 
+  ##x Shortage from "Dsl Children". Not named "children" since it will
+  ##  conflict with something for sure.
+  ##  Used in cases like building XML where gathering results from DSL
+  ##  starts at root.
+  @property
+  def dchildren( self ) :
+    return self.__children
+
   ##x Search children for item with {i name} and evalute to it or |None|.
   def o( self, name ) :
     for oChild in self.__children :
