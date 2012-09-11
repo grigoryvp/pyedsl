@@ -6,6 +6,7 @@
 # See LICENSE for details.
 
 import threading
+import re
 
 class Item( object ) :
 
@@ -87,11 +88,43 @@ class Item( object ) :
     self.__children.append( child )
 
 
+class RegexpMatch( object ) :
+
+  def __init__( self, match ) :
+    self.__match = match
+
+  @property
+  def string( self ) :
+    return self.__match.string
+
+  @property
+  def first( self ) :
+    lGroups = self.__match.groups()
+    if len( lGroups ) :
+      return lGroups[ 0 ]
+    else :
+      return None
+
+  def __getitem__( self, key ) :
+    if isinstance( key, int ) :
+      return self.__match.groups()( key )
+    if isinstance( key, basestring ) :
+      return self.__match.groupdict()( key )
+    assert False, "Unknown key type."
+
+
 class Pd( object ) :
 
   def __init__( self ) :
     self.Item = Item
     self.__tls = threading.local()
+
+  def search( self, pattern, string ) :
+    oMatch = re.search( pattern, string )
+    if oMatch is not None :
+      self.__tls.match = RegexpMatch( oMatch )
+      return self.__tls.match
+    return None
 
   ##! |pd.o| holds current DSL item that is thread local and is auto
   ##  maintained  via |with| statements:
@@ -113,6 +146,14 @@ class Pd( object ) :
   @o.setter
   def o( self, value ) :
     self.__tls.o = value
+
+  @property
+  def match( self ) :
+    if hasattr( self.__tls, 'match' ) :
+      return self.__tls.match
+    else :
+      return None
+
 
 pd = Pd()
 
