@@ -6,12 +6,13 @@ import setuptools
 
 setup(
   name='pyedsl',
-  version='0.1.1',
+  version='0.1.2',
   description='Simple Python Embedded DSL framework.',
   author='Grigory Petrov',
   author_email='grigory.v.p@gmail.com',
   url='http://bitbucket.org/eyeofhell/pyedsl/',
-  packages=[ 'pyedsl' ],
+  packages = [ 'pyedsl_impl' ],
+  py_modules = [ 'pyedsl' ],
   classifiers=[
     'Development Status :: 1 - Prototype',
     'Environment :: Console',
