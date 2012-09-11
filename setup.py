@@ -5,13 +5,13 @@ from distutils.core import setup
 import setuptools
 
 setup(
-  name='pd',
-  version='0.1.0',
-  description='Simple Python DSL framework.',
+  name='pyedsl',
+  version='0.1.1',
+  description='Simple Python Embedded DSL framework.',
   author='Grigory Petrov',
   author_email='grigory.v.p@gmail.com',
-  url='http://bitbucket.org/eyeofhell/pd/',
-  packages=[ 'pd' ],
+  url='http://bitbucket.org/eyeofhell/pyedsl/',
+  packages=[ 'pyedsl' ],
   classifiers=[
     'Development Status :: 1 - Prototype',
     'Environment :: Console',

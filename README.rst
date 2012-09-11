@@ -1,8 +1,8 @@
-==
-PD
-==
+======
+pyedsl
+======
 
-A simple Python DSL framework.
+A simple Python Embedded DSL framework.
 
 Why?
 ====
