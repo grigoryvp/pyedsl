@@ -1,24 +1,26 @@
 #!/usr/bin/env python
 # coding:utf-8 vi:et:ts=2
 
-from distutils.core import setup
 import setuptools
+import pyedsl.info
 
-setup(
-  name='pyedsl',
-  version='0.1.2',
-  description='Simple Python Embedded DSL framework.',
-  author='Grigory Petrov',
-  author_email='grigory.v.p@gmail.com',
-  url='http://bitbucket.org/eyeofhell/pyedsl/',
-  packages = [ 'pyedsl_impl' ],
-  py_modules = [ 'pyedsl' ],
-  classifiers=[
+setuptools.setup(
+  name         = pyedsl.info.NAME_SHORT,
+  version      = pyedsl.info.VER_TXT,
+  description  = 'Simple Python Embedded DSL framework.',
+  author       = 'Grigory Petrov',
+  author_email = 'grigory.v.p@gmail.com',
+  url          = 'http://bitbucket.org/eyeofhell/pyedsl/',
+  packages     = [ 'pyedsl' ],
+  entry_points = { 'console_scripts' : [ 'crt = code_review_tool:main' ] },
+  classifiers = [
     'Development Status :: 1 - Prototype',
     'Environment :: Console',
     'Intended Audience :: Developers',
     'License :: GPLv3',
     'Operating System :: OS Independent',
     'Programming Language :: Python',
-    'Topic :: Software Development :: Framework' ])
+    'Topic :: Software Development :: Framework'
+  ],
+)
 
