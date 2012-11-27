@@ -12,7 +12,6 @@ setuptools.setup(
   author_email = 'grigory.v.p@gmail.com',
   url          = 'http://bitbucket.org/eyeofhell/pyedsl/',
   packages     = [ 'pyedsl' ],
-  entry_points = { 'console_scripts' : [ 'crt = code_review_tool:main' ] },
   classifiers = [
     'Development Status :: 1 - Prototype',
     'Environment :: Console',
