@@ -14,18 +14,10 @@ def enter( self ) :
   ##  is required to correctly handle hierarchical DSL construction.
   self.__dict__[ '__pyedsl_context' ] = pd.o
   pd.o = self
-  ##! This method can be added to any class via |pd.wrap()|. If original
-  ##  class already has |__enter__|, it's saved in this var.
-  if '__pyedsl_original_enter' in self.__dict__ :
-    return self.__dict__[ '__pyedsl_original_enter' ]()
   return self
 
 ##x |__enter__| that can be used with any class.
 def exit( self, * vargs ) :
-  ##! This method can be added to any class via |pd.wrap()|. If original
-  ##  class already has |__enter__|, it's saved in this var.
-  if '__pyedsl_original_exit' in self.__dict__ :
-    return self.__dict__[ '__pyedsl_original_exit' ]( * vargs )
   pd.o = self.__dict__[ '__pyedsl_context' ]
   if isinstance( self, Item ) :
     if self._Item__pyedsl_parent is not None :
@@ -146,11 +138,7 @@ class Pd( object ) :
   ##  Wraps any object so it can be used inside 'with' and reference
   ##  to it will be available as |pd.o|.
   def wrap( self, object ) :
-    if hasattr( object.__class__, '__enter__' ) :
-      object.__dict__[ '__pyedsl_original_enter' ] = object.__enter__
     object.__class__.__enter__ = enter
-    if hasattr( object.__class__, '__exit__' ) :
-      object.__dict__[ '__pyedsl_original_exit' ] = object.__exit__
     object.__class__.__exit__ = exit
     return object
 
