@@ -8,6 +8,33 @@
 import threading
 import re
 
+##x |__enter__| that can be used with any class.
+def enter( self ) :
+  ##  Save current value of |pd.o| so |__exit__()| can restore it. This
+  ##  is required to correctly handle hierarchical DSL construction.
+  self.__dict__[ '__pyedsl_context' ] = pd.o
+  pd.o = self
+  ##! This method can be added to any class via |pd.wrap()|. If original
+  ##  class already has |__enter__|, it's saved in this var.
+  if '__pyedsl_original_enter' in self.__dict__ :
+    return self.__dict__[ '__pyedsl_original_enter' ]()
+  return self
+
+##x |__enter__| that can be used with any class.
+def exit( self, * vargs ) :
+  ##! This method can be added to any class via |pd.wrap()|. If original
+  ##  class already has |__enter__|, it's saved in this var.
+  if '__pyedsl_original_exit' in self.__dict__ :
+    return self.__dict__[ '__pyedsl_original_exit' ]( * vargs )
+  pd.o = self.__dict__[ '__pyedsl_context' ]
+  if isinstance( self, Item ) :
+    if self._Item__pyedsl_parent is not None :
+      ##  User defined adder.
+      if hasattr( self._Item__pyedsl_parent, 'dadd' ) :
+        self._Item__pyedsl_parent.dadd( self )
+      ##  Build-in adder that maintain tree for lookup.
+      self._Item__pyedsl_parent._Item__pyedsl_add( self )
+
 class Item( object ) :
 
   def __init__( self,
@@ -25,10 +52,10 @@ class Item( object ) :
   ) :
     if isinstance( parent, basestring ) and 'auto' == parent :
       assert pd.o is not None, "Auto parent top level item."
-      self.__parent = pd.o
+      self.__pyedsl_parent = pd.o
     else :
       assert parent is None or isinstance( parent, Item ), "Wrong parent."
-      self.__parent = parent
+      self.__pyedsl_parent = parent
     if name is not None :
       assert isinstance( name, basestring )
       self.__name = name
@@ -37,26 +64,16 @@ class Item( object ) :
     self.__children = []
 
   def __enter__( self ) :
-    ##  Save current value of |pd.o| so |__exit__()| can restore it. This
-    ##  is required to correctly handle hierarchical DSL construction.
-    self.__dict__[ '__o' ] = pd.o
-    pd.o = self
-    return self
+    return enter( self )
 
   def __exit__( self, * vargs ) :
-    pd.o = self.__dict__[ '__o' ]
-    if self.__parent is not None :
-      ##  User defined adder.
-      if hasattr( self.__parent, 'dadd' ) :
-        self.__parent.dadd( self )
-      ##  Build-in adder that maintain tree for lookup.
-      self.__parent.__dadd( self )
+    return exit( self, * vargs )
 
   @property
   ##x Shortage from "Dsl Parent". Not named "parent" since it will conflict
   ##  with |Tkinter| "parent" method.
   def dparent( self ) :
-    return self.__parent
+    return self.__pyedsl_parent
 
   ##x Shortage from "Dsl Name". Not named "name" since it will conflict
   ##  with something for sure.
@@ -84,7 +101,7 @@ class Item( object ) :
     return None
 
   ##x "DSL Add", name to prevent conflicts.
-  def __dadd( self, child ) :
+  def __pyedsl_add( self, child ) :
     self.__children.append( child )
 
 
@@ -112,19 +129,30 @@ class RegexpMatch( object ) :
       return self.__match.groupdict()( key )
     assert False, "Unknown key type."
 
-
 class Pd( object ) :
 
   def __init__( self ) :
     self.Item = Item
     self.__tls = threading.local()
 
+  ##  Shortcut to access regexp search result properties.
   def search( self, pattern, string ) :
     oMatch = re.search( pattern, string )
     if oMatch is not None :
       self.__tls.match = RegexpMatch( oMatch )
       return self.__tls.match
     return None
+
+  ##  Wraps any object so it can be used inside 'with' and reference
+  ##  to it will be available as |pd.o|.
+  def wrap( self, object ) :
+    if hasattr( object.__class__, '__enter__' ) :
+      object.__dict__[ '__pyedsl_original_enter' ] = object.__enter__
+    object.__class__.__enter__ = enter
+    if hasattr( object.__class__, '__exit__' ) :
+      object.__dict__[ '__pyedsl_original_exit' ] = object.__exit__
+    object.__class__.__exit__ = exit
+    return object
 
   ##! |pd.o| holds current DSL item that is thread local and is auto
   ##  maintained  via |with| statements:

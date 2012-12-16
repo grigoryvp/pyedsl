@@ -10,3 +10,12 @@ with xml.Tag( 'foo', parent = None ) as oXml :
 
 assert oXml.o( 'bar' ).dparent.dname == 'foo'
 
+##  Usage with third-party classes.
+class Foo( object ) : pass
+class Bar( object ) : pass
+with pd.wrap( Foo() ) :
+  print( pd.o )
+  with pd.wrap( Bar() ) :
+    print( pd.o )
+  print( pd.o )
+
