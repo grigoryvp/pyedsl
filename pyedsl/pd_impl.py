@@ -8,6 +8,7 @@
 import threading
 import re
 
+
 ##x |__enter__| that can be used with any class.
 def enter( self ) :
   ##  Save current value of |pd.o| so |__exit__()| can restore it. This
@@ -16,8 +17,9 @@ def enter( self ) :
   pd.o = self
   return self
 
+
 ##x |__enter__| that can be used with any class.
-def exit( self, * vargs ) :
+def exit( self, * l_args ) :
   pd.o = self.__dict__[ '__pyedsl_context' ]
   if isinstance( self, Item ) :
     if self._Item__pyedsl_parent is not None :
@@ -27,11 +29,13 @@ def exit( self, * vargs ) :
       ##  Build-in adder that maintain tree for lookup.
       self._Item__pyedsl_parent._Item__pyedsl_add( self )
 
+
 class Item( object ) :
+
 
   def __init__( self,
     ##i DSL item name. Used to lookup child item from parent item.
-    name = None,
+    s_name = None,
     ##i DSL item parent:
     ##  . |None| to define top level DSL item.
     ##  . 'auto' to implicitly use `current` parent stored in
@@ -40,17 +44,17 @@ class Item( object ) :
     ##  . |pd.Item| subclass to continue DSL construction from existing
     ##    parent. Allows to define top level item as standalone class and
     ##    construct child DSL hierarchy in constructor.
-    parent = 'auto'
+    o_parent = 'auto'
   ) :
-    if isinstance( parent, basestring ) and 'auto' == parent :
+    if isinstance( o_parent, basestring ) and 'auto' == o_parent :
       assert pd.o is not None, "Auto parent top level item."
       self.__pyedsl_parent = pd.o
     else :
-      assert parent is None or isinstance( parent, Item ), "Wrong parent."
-      self.__pyedsl_parent = parent
-    if name is not None :
-      assert isinstance( name, basestring )
-      self.__name = name
+      assert o_parent is None or isinstance( o_parent, Item ), "Wrong parent."
+      self.__pyedsl_parent = o_parent
+    if s_name is not None :
+      assert isinstance( s_name, basestring )
+      self.__name = s_name
     else :
       self.__name = self.__class__.__name__.lower()
     self.__children = []
@@ -58,8 +62,9 @@ class Item( object ) :
   def __enter__( self ) :
     return enter( self )
 
-  def __exit__( self, * vargs ) :
-    return exit( self, * vargs )
+  def __exit__( self, * l_args ) :
+    return exit( self, * l_args )
+
 
   @property
   ##x Shortage from "Dsl Parent". Not named "parent" since it will conflict
@@ -67,11 +72,13 @@ class Item( object ) :
   def dparent( self ) :
     return self.__pyedsl_parent
 
+
   ##x Shortage from "Dsl Name". Not named "name" since it will conflict
   ##  with something for sure.
   @property
   def dname( self ) :
     return self.__name
+
 
   ##x Shortage from "Dsl Children". Not named "children" since it will
   ##  conflict with something for sure.
@@ -81,30 +88,35 @@ class Item( object ) :
   def dchildren( self ) :
     return self.__children
 
+
   ##x Search children for item with {i name} and evalute to it or |None|.
-  def o( self, name ) :
+  def o( self, s_name ) :
     for oChild in self.__children :
-      if oChild.dname == name :
+      if oChild.dname == s_name :
         return oChild
     for oChild in self.__children :
-      oItem = oChild.o( name )
+      oItem = oChild.o( s_name )
       if oItem is not None :
         return oItem
     return None
 
+
   ##x "DSL Add", name to prevent conflicts.
-  def __pyedsl_add( self, child ) :
-    self.__children.append( child )
+  def __pyedsl_add( self, o_child ) :
+    self.__children.append( o_child )
 
 
 class RegexpMatch( object ) :
 
-  def __init__( self, match ) :
-    self.__match = match
+
+  def __init__( self, s_match ) :
+    self.__match = s_match
+
 
   @property
   def string( self ) :
     return self.__match.string
+
 
   @property
   def first( self ) :
@@ -114,33 +126,39 @@ class RegexpMatch( object ) :
     else :
       return None
 
-  def __getitem__( self, key ) :
-    if isinstance( key, int ) :
-      return self.__match.groups()( key )
-    if isinstance( key, basestring ) :
-      return self.__match.groupdict()( key )
+
+  def __getitem__( self, s_key ) :
+    if isinstance( s_key, int ) :
+      return self.__match.groups()( s_key )
+    if isinstance( s_key, basestring ) :
+      return self.__match.groupdict()( s_key )
     assert False, "Unknown key type."
 
+
 class Pd( object ) :
+
 
   def __init__( self ) :
     self.Item = Item
     self.__tls = threading.local()
 
+
   ##  Shortcut to access regexp search result properties.
-  def search( self, pattern, string ) :
-    oMatch = re.search( pattern, string )
+  def search( self, s_pattern, s_subject ) :
+    oMatch = re.search( s_pattern, s_subject )
     if oMatch is not None :
       self.__tls.match = RegexpMatch( oMatch )
       return self.__tls.match
     return None
 
+
   ##  Wraps any object so it can be used inside 'with' and reference
   ##  to it will be available as |pd.o|.
-  def wrap( self, object ) :
-    object.__class__.__enter__ = enter
-    object.__class__.__exit__ = exit
+  def wrap( self, o_target ) :
+    o_target.__class__.__enter__ = enter
+    o_target.__class__.__exit__ = exit
     return object
+
 
   ##! |pd.o| holds current DSL item that is thread local and is auto
   ##  maintained  via |with| statements:
@@ -159,9 +177,10 @@ class Pd( object ) :
     else :
       return None
 
+
   @o.setter
-  def o( self, value ) :
-    self.__tls.o = value
+  def o( self, o_value ) :
+    self.__tls.o = o_value
 
   @property
   def match( self ) :
