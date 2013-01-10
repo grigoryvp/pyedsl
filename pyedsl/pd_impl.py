@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Python DSL
-# Copyright 2012 Grigory Petrov
+# Python Embedded DSL implementation.
+# Copyright 2013 Grigory Petrov
 # See LICENSE for details.
 
 import threading
@@ -22,12 +22,12 @@ def enter( self ) :
 def exit( self, * l_args ) :
   pd.o = self.__dict__[ '__pyedsl_context' ]
   if isinstance( self, Item ) :
-    if self._Item__pyedsl_parent is not None :
+    if self._Item__oPyedslParent is not None :
       ##  User defined adder.
-      if hasattr( self._Item__pyedsl_parent, 'dadd' ) :
-        self._Item__pyedsl_parent.dadd( self )
+      if hasattr( self._Item__oPyedslParent, 'dadd' ) :
+        self._Item__oPyedslParent.dadd( self )
       ##  Build-in adder that maintain tree for lookup.
-      self._Item__pyedsl_parent._Item__pyedsl_add( self )
+      self._Item__oPyedslParent._Item__pyedslAdd( self )
 
 
 class Item( object ) :
@@ -48,16 +48,16 @@ class Item( object ) :
   ) :
     if isinstance( o_parent, basestring ) and 'auto' == o_parent :
       assert pd.o is not None, "Auto parent top level item."
-      self.__pyedsl_parent = pd.o
+      self.__oPyedslParent = pd.o
     else :
       assert o_parent is None or isinstance( o_parent, Item ), "Wrong parent."
-      self.__pyedsl_parent = o_parent
+      self.__oPyedslParent = o_parent
     if s_name is not None :
       assert isinstance( s_name, basestring )
-      self.__name = s_name
+      self.__sName = s_name
     else :
-      self.__name = self.__class__.__name__.lower()
-    self.__children = []
+      self.__sName = self.__class__.__name__.lower()
+    self.__lChildren = []
 
   def __enter__( self ) :
     return enter( self )
@@ -70,14 +70,14 @@ class Item( object ) :
   ##x Shortage from "Dsl Parent". Not named "parent" since it will conflict
   ##  with |Tkinter| "parent" method.
   def dparent( self ) :
-    return self.__pyedsl_parent
+    return self.__oPyedslParent
 
 
   ##x Shortage from "Dsl Name". Not named "name" since it will conflict
   ##  with something for sure.
   @property
   def dname( self ) :
-    return self.__name
+    return self.__sName
 
 
   ##x Shortage from "Dsl Children". Not named "children" since it will
@@ -86,15 +86,15 @@ class Item( object ) :
   ##  starts at root.
   @property
   def dchildren( self ) :
-    return self.__children
+    return self.__lChildren
 
 
   ##x Search children for item with {i name} and evalute to it or |None|.
   def o( self, s_name ) :
-    for oChild in self.__children :
+    for oChild in self.__lChildren :
       if oChild.dname == s_name :
         return oChild
-    for oChild in self.__children :
+    for oChild in self.__lChildren :
       oItem = oChild.o( s_name )
       if oItem is not None :
         return oItem
@@ -102,25 +102,25 @@ class Item( object ) :
 
 
   ##x "DSL Add", name to prevent conflicts.
-  def __pyedsl_add( self, o_child ) :
-    self.__children.append( o_child )
+  def __pyedslAdd( self, o_child ) :
+    self.__lChildren.append( o_child )
 
 
 class RegexpMatch( object ) :
 
 
-  def __init__( self, s_match ) :
-    self.__match = s_match
+  def __init__( self, o_match ) :
+    self.__oMatch = o_match
 
 
   @property
   def string( self ) :
-    return self.__match.string
+    return self.__oMatch.string
 
 
   @property
   def first( self ) :
-    lGroups = self.__match.groups()
+    lGroups = self.__oMatch.groups()
     if len( lGroups ) :
       return lGroups[ 0 ]
     else :
@@ -129,9 +129,9 @@ class RegexpMatch( object ) :
 
   def __getitem__( self, s_key ) :
     if isinstance( s_key, int ) :
-      return self.__match.groups()( s_key )
+      return self.__oMatch.groups()( s_key )
     if isinstance( s_key, basestring ) :
-      return self.__match.groupdict()( s_key )
+      return self.__oMatch.groupdict()( s_key )
     assert False, "Unknown key type."
 
 
@@ -140,15 +140,15 @@ class Pd( object ) :
 
   def __init__( self ) :
     self.Item = Item
-    self.__tls = threading.local()
+    self.__oTls = threading.local()
 
 
   ##  Shortcut to access regexp search result properties.
   def search( self, s_pattern, s_subject ) :
     oMatch = re.search( s_pattern, s_subject )
     if oMatch is not None :
-      self.__tls.match = RegexpMatch( oMatch )
-      return self.__tls.match
+      self.__oTls.match = RegexpMatch( oMatch )
+      return self.__oTls.match
     return None
 
 
@@ -172,20 +172,20 @@ class Pd( object ) :
   ##  |   pu.o.setCaption( "window" )
   @property
   def o( self ) :
-    if hasattr( self.__tls, 'o' ) :
-      return self.__tls.o
+    if hasattr( self.__oTls, 'o' ) :
+      return self.__oTls.o
     else :
       return None
 
 
   @o.setter
   def o( self, o_value ) :
-    self.__tls.o = o_value
+    self.__oTls.o = o_value
 
   @property
   def match( self ) :
-    if hasattr( self.__tls, 'match' ) :
-      return self.__tls.match
+    if hasattr( self.__oTls, 'match' ) :
+      return self.__oTls.match
     else :
       return None
 

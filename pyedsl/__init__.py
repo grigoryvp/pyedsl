@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Python DSL
-# Copyright 2012 Grigory Petrov
+# Python Embedded DSL core.
+# Copyright 2013 Grigory Petrov
 # See LICENSE for details.
 
 from pd_impl import *
