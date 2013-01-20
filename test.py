@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding:utf-8 vi:et:ts=2
 
+# Python Embedded DSL simple test.
+# Copyright 2013 Grigory Petrov
+# See LICENSE for details.
+
 from pyedsl import pd, xml
 
 with xml.Tag( 'foo', parent = None ) as oXml :
