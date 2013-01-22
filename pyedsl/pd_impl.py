@@ -157,7 +157,7 @@ class Pd( object ) :
   def wrap( self, o_target ) :
     o_target.__class__.__enter__ = enter
     o_target.__class__.__exit__ = exit
-    return object
+    return o_target
 
 
   ##! |pd.o| holds current DSL item that is thread local and is auto
