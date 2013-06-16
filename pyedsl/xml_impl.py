@@ -8,12 +8,12 @@
 from pd_impl import pd
 
 
-class Tag( pd.Item ) :
+class Tag( pd.Item ):
 
 
-  def build( self, n_offset = 0 ) :
+  def build( self, n_offset = 0 ):
     print( " " * n_offset + "<{0}>".format( self.dname ) )
-    for oChild in self.dchildren :
+    for oChild in self.dchildren:
       oChild.build( n_offset + 2 )
     print( " " * n_offset + "</{0}>".format( self.dname ) )
 

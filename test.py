@@ -7,20 +7,20 @@
 
 from pyedsl import pd, xml
 
-with xml.Tag( 'foo', o_parent = None ) as oXml :
-  with xml.Tag( 'bar' ) :
+with xml.Tag( 'foo', o_parent = None ) as oXml:
+  with xml.Tag( 'bar' ):
     pass
   pd.o.build()
 
 assert oXml.o( 'bar' ).dparent.dname == 'foo'
 
 ##  Usage with third-party classes.
-class Foo( object ) : pass
-class Bar( object ) : pass
+class Foo( object ): pass
+class Bar( object ): pass
 
-with pd.wrap( Foo() ) :
+with pd.wrap( Foo() ):
   print( pd.o )
-  with pd.wrap( Bar() ) :
+  with pd.wrap( Bar() ):
     print( pd.o )
   print( pd.o )
 
